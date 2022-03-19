@@ -15,7 +15,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 
 let availableCountryCodes = "";
 let availableCountryCodesString = "";
-db.all("select distinct country_code from Photos", (err, data) => {
+db.all("select distinct country_code from Photos where flagged != 1", (err, data) => {
     if (!err) {
         availableCountryCodes = data.map(e => e.country_code);
         availableCountryCodesString = availableCountryCodes.map(cc => "?").join(",");
@@ -33,7 +33,7 @@ function shuffleArray(array) {
 }
 function getAvailableOwners(countryCode) {
     return new Promise(resolve => {
-        db.all("select distinct owner from Photos where country_code = ?", countryCode, (err, data) => {
+        db.all("select distinct owner from Photos where country_code = ? and flagged != 1", countryCode, (err, data) => {
             if (!err) {
                 resolve(data.map(e => e.owner))
             } else {
@@ -44,7 +44,7 @@ function getAvailableOwners(countryCode) {
 }
 function getRandomPhoto(countryCode, owner) {
     return new Promise(resolve => {
-        db.get("select Photos.*, Country_Name_Fr, Continent_Code from Photos left join CountryCodes on country_code == Two_Letter_Country_Code where owner = ? and country_code = ? order by random() limit 1", [owner, countryCode], (err, data) => {
+        db.get("select Photos.*, Country_Name_Fr, Continent_Code from Photos left join CountryCodes on country_code == Two_Letter_Country_Code where owner = ? and country_code = ? and flagged != 1 order by random() limit 1", [owner, countryCode], (err, data) => {
             if (!err) {
                 resolve(data)
             } else {
@@ -75,6 +75,20 @@ app.get('/api/image', async (req, res) => {
     res.json({
         photo: randomPhoto,
         countryChoices: randomCountryChoices
+    });
+});
+
+function flagPhoto(photoId) {
+    return new Promise(resolve => {
+        db.all("update Photos set flagged = 1 where id = ?", photoId, (err, data) => {
+            resolve(err);
+        })
+    });
+}
+app.delete('/api/image/:id', async (req, res) => {
+    let error = await flagPhoto(req.params.id);
+    res.json({
+        error: error
     });
 });
 

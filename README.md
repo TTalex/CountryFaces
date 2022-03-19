@@ -19,6 +19,7 @@ Built on nodejs and React.
 | `admin1`       | TEXT        | Name of country of the above city       |
 | `admin2`       | TEXT        | Name of region of the above city        |
 | `country_code` | TEXT        | Two letters country code                |
+| `flagged`      | INTEGER     | 1 if not a portrait or incorrect geo    |
 
 ## Installation
 Developped with nodejs>=14.16.1

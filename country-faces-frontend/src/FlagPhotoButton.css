@@ -1,0 +1,5 @@
+.btn[disabled] {
+    background-color: #ffffff;
+    color: black;
+    border-color: #979797;
+}

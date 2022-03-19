@@ -36,7 +36,7 @@ def fetchpage(page):
         except KeyError as e:
             continue
         try:
-            cur.execute("INSERT INTO Photos VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (photo["id"], photo["owner"], photo["latitude"], photo["longitude"], photo["url_c"], photo["url"], location.get('name'), location.get('admin1'), location.get('admin2'), location.get('cc')))
+            cur.execute("INSERT INTO Photos VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)", (photo["id"], photo["owner"], photo["latitude"], photo["longitude"], photo["url_c"], photo["url"], location.get('name'), location.get('admin1'), location.get('admin2'), location.get('cc')))
         except sqlite3.IntegrityError as e:
             pass
 for i in range(8, 30):

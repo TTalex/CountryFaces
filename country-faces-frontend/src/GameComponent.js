@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './GameComponent.css';
+import FlagPhotoButton from './FlagPhotoButton';
 
 
 export default function GameComponent(){
@@ -23,7 +24,10 @@ export default function GameComponent(){
         )
     }, [round]);
     function handleCountrySelection(event) {
-        setGuess(parseInt(event.target.value));
+        // Only consider guess if nothing has been guessed yet
+        if (guess === -1) {
+            setGuess(parseInt(event.target.value));
+        }
     }
     function continueGame() {
         setGuess(-1);
@@ -46,6 +50,7 @@ export default function GameComponent(){
             }
             </div>
             {guess > -1 && <div><button className="btn btn-secondary" onClick={continueGame}>Continuer</button></div>}
+            {guess > -1 && <div className="bottomRightBtn"><FlagPhotoButton photo={params.photo}/></div>}
         </div>
     )
 }
