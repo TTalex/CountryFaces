@@ -4,5 +4,20 @@
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "sqlite3": "^5.0.2"
-  }
+  },
+  "name": "countryfaces",
+  "description": "Web based game where one has to guess the country of origin of a photographed person",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TTalex/CountryFaces.git"
+  },
+  "author": "TTalex",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TTalex/CountryFaces/issues"
+  },
+  "homepage": "https://github.com/TTalex/CountryFaces#readme"
 }
