@@ -7,7 +7,7 @@
   },
   "name": "countryfaces",
   "description": "Web based game where one has to guess the country of origin of a photographed person",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "index.js",
   "devDependencies": {},
   "repository": {

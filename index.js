@@ -13,15 +13,6 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'country-faces-frontend', 'build')));
 app.use(bodyParser.json({limit: '50mb'}));
 
-let availableCountryCodes = "";
-let availableCountryCodesString = "";
-db.all("select distinct country_code from Photos where flagged != 1", (err, data) => {
-    if (!err) {
-        availableCountryCodes = data.map(e => e.country_code);
-        availableCountryCodesString = availableCountryCodes.map(cc => "?").join(",");
-    }
-})
-
 function getRandomElement(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
@@ -30,6 +21,17 @@ function shuffleArray(array) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+}
+function getAvailableCountryCodes() {
+    return new Promise(resolve => {
+        db.all("select distinct country_code from Photos where flagged != 1", (err, data) => {
+            if (!err) {
+                resolve(data.map(e => e.country_code))
+            } else {
+                resolve(null);
+            }
+        })
+    });
 }
 function getAvailableOwners(countryCode) {
     return new Promise(resolve => {
@@ -53,7 +55,8 @@ function getRandomPhoto(countryCode, owner) {
         })
     });
 }
-function getRandomCountryChoices(continentCode, selectedCountryCode) {
+function getRandomCountryChoices(continentCode, selectedCountryCode, availableCountryCodes) {
+    let availableCountryCodesString = availableCountryCodes.map(cc => "?").join(",");
     return new Promise(resolve => {
         db.all("select Country_Name_Fr from CountryCodes where Continent_Code == ? and Two_Letter_Country_Code != ? and Two_Letter_Country_Code in (" + availableCountryCodesString + ") order by random() limit 2", [continentCode, selectedCountryCode].concat(availableCountryCodes), (err, data) => {
             if (!err) {
@@ -65,11 +68,12 @@ function getRandomCountryChoices(continentCode, selectedCountryCode) {
     });
 }
 app.get('/api/image', async (req, res) => {
+    let availableCountryCodes = await getAvailableCountryCodes();
     let randomCountryCode = getRandomElement(availableCountryCodes);
     let availableOwners = await getAvailableOwners(randomCountryCode);
     let randomOwner = getRandomElement(availableOwners);
     let randomPhoto = await getRandomPhoto(randomCountryCode, randomOwner);
-    let randomCountryChoices = await getRandomCountryChoices(randomPhoto.Continent_Code, randomCountryCode);
+    let randomCountryChoices = await getRandomCountryChoices(randomPhoto.Continent_Code, randomCountryCode, availableCountryCodes);
     randomCountryChoices.push(randomPhoto.Country_Name_Fr);
     shuffleArray(randomCountryChoices);
     res.json({
