@@ -1,13 +1,17 @@
 .mainPhoto {
-    max-height: 50vh;
+    max-height: 40vh;
+    max-width: 100%
 }
 
+.choicesContainer {
+    display: inline-block;
+    margin-top: 10px;
+    line-height: 50px;
+}
 .choiceBtn {
     margin: 0px 5px 0px 5px;
 }
 
-.bottomRightBtn {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
+.bottomBtn {
+    margin-top: 5px;
 }

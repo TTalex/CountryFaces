@@ -19,7 +19,7 @@ export default function FlagPhotoButton(props){
     }
     return (
         <div>
-            <button className="btn btn-danger" disabled={btnDisabled} onClick={flagPhoto}>🚩 Photo / lieu incorrect {btnDisabled && '✔️'}</button>
+            <button className="btn-sm btn-danger" disabled={btnDisabled} onClick={flagPhoto}>🚩 Photo / lieu incorrect {btnDisabled && '✔️'}</button>
         </div>
     )
 }

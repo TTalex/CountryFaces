@@ -2,6 +2,9 @@
   text-align: center;
 }
 .logo {
-    width: 50%;
-    margin: 20px;
+    padding: 2%;
+    margin: auto;
+}
+.logo img {
+    width: 100%;
 }

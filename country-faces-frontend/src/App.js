@@ -14,8 +14,8 @@ function App() {
     const randomLogo = logos[Math.floor(Math.random() * logos.length)];
     return (
         <div className="App">
-            <div>
-                <img className="logo" src={randomLogo} alt="Country Faces" />
+            <div className="logo col-md-6">
+                <img src={randomLogo} alt="Country Faces" />
             </div>
             <GameComponent />
         </div>
