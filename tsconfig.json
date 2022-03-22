@@ -2,7 +2,6 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es3",
-        "noImplicitAny": false,
         "outDir": "built",
         "rootDir": ".",
         "sourceMap": false,
@@ -11,6 +10,6 @@
     },
     "exclude": [
         "node_modules",
-	"country-faces-frontend"
+        "country-faces-frontend"
     ]
 }

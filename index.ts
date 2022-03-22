@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.static(path.join('country-faces-frontend', 'build')));
 app.use(bodyParser.json({limit: '50mb'}));
 
-function getRandomElement(array:any[]):any {
+function getRandomElement<Type>(array:Type[]):Type {
     return array[Math.floor(Math.random() * array.length)];
 }
 function shuffleArray(array: any[]) {

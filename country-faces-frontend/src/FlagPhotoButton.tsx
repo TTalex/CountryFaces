@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import './FlagPhotoButton.css';
 
-export default function FlagPhotoButton(props){
+export default function FlagPhotoButton(props : {photo: {id: string}}){
     console.log('props', props);
     const [btnDisabled, setBtnDisabled] = useState(false);
     function flagPhoto() {

@@ -3,13 +3,30 @@ import './GameComponent.css';
 import FlagPhotoButton from './FlagPhotoButton';
 import ScoreComponent from './ScoreComponent';
 
-
+interface Photo {
+    id: string,
+    owner: string,
+    lat: number,
+    lon: number,
+    direct_url: string,
+    url: string,
+    city: string,
+    admin1: string,
+    admin2: string,
+    country_code: string,
+    flagged: number
+}
+interface CountryCodes {
+    Country_Name_Fr: string,
+    Continent_Code: string
+}
 export default function GameComponent(){
     const [params, setParams] = useState({
-        photo: {},
-        countryChoices: []
+        photo: {} as Photo & CountryCodes,
+        countryChoices: [] as string[]
     });
-    const [guess, setGuess] = useState(-1);
+    type guessType = -1|0|1|2;
+    const [guess, setGuess] = useState<guessType>(-1);
     const [round, setRound] = useState(1);
     useEffect(() => {
         fetch("http://" + window.location.hostname + ":8000/api/image")
@@ -24,10 +41,11 @@ export default function GameComponent(){
             }
         )
     }, [round]);
-    function handleCountrySelection(event) {
+    function handleCountrySelection(event:React.MouseEvent<HTMLButtonElement>) {
         // Only consider guess if nothing has been guessed yet
         if (guess === -1) {
-            setGuess(parseInt(event.target.value));
+            const target = event.target as HTMLButtonElement;
+            setGuess(parseInt(target.value) as guessType);
             // Autocontinue ?
             // setTimeout(() => continueGame(), 1000)
         }
@@ -36,7 +54,7 @@ export default function GameComponent(){
         setGuess(-1);
         setRound(prevRound => prevRound + 1);
     }
-    let resultDiv = "";
+    let resultDiv : JSX.Element;
     if (params.countryChoices[guess] === params.photo.Country_Name_Fr) {
         resultDiv = <div>Bravo !</div>;
     } else {
@@ -44,10 +62,10 @@ export default function GameComponent(){
     }
     return (
         <div>
-            <ScoreComponent guess={guess} result={params.countryChoices[guess] === params.photo.Country_Name_Fr} />
+            <ScoreComponent hasUserGuessed={guess > -1} isGuessCorrect={params.countryChoices[guess] === params.photo.Country_Name_Fr} />
             <div>
                 {guess > -1
-                    ? <a href={params.photo.url} target="_blank">
+                    ? <a href={params.photo.url} target="_blank" rel="noreferrer">
                         <img className="mainPhoto" src={params.photo.direct_url} alt="random portrait" />
                     </a>
                     : <img className="mainPhoto" src={params.photo.direct_url} alt="random portrait" />
