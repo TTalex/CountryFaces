@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import './GameComponent.css';
 import FlagPhotoButton from './FlagPhotoButton';
 import ScoreComponent from './ScoreComponent';
+import Spinner from './Spinner';
 
 interface Photo {
     id: string,
@@ -28,6 +29,7 @@ export default function GameComponent(){
     type guessType = -1|0|1|2;
     const [guess, setGuess] = useState<guessType>(-1);
     const [round, setRound] = useState(1);
+    const [imageIsLoaded, setImageIsLoaded] = useState(false);
     useEffect(() => {
         fetch("http://" + window.location.hostname + ":8000/api/image")
         .then(res => res.json())
@@ -50,9 +52,17 @@ export default function GameComponent(){
             // setTimeout(() => continueGame(), 1000)
         }
     }
+    function handleImageLoaded() {
+        setImageIsLoaded(true);
+    }
     function continueGame() {
         setGuess(-1);
         setRound(prevRound => prevRound + 1);
+        setParams({
+            photo: {} as Photo & CountryCodes,
+            countryChoices: [] as string[]
+        });
+        setImageIsLoaded(false);
     }
     let resultDiv : JSX.Element;
     if (params.countryChoices[guess] === params.photo.Country_Name_Fr) {
@@ -63,12 +73,15 @@ export default function GameComponent(){
     return (
         <div>
             <ScoreComponent hasUserGuessed={guess > -1} isGuessCorrect={params.countryChoices[guess] === params.photo.Country_Name_Fr} />
-            <div>
+            <div style={{display: imageIsLoaded ? "none" : "block"}}>
+                <Spinner />
+            </div>
+            <div style={{display: imageIsLoaded ? "block" : "none"}}>
                 {guess > -1
                     ? <a href={params.photo.url} target="_blank" rel="noreferrer">
                         <img className="mainPhoto" src={params.photo.direct_url} alt="random portrait" />
                     </a>
-                    : <img className="mainPhoto" src={params.photo.direct_url} alt="random portrait" />
+                    : <img className="mainPhoto" src={params.photo.direct_url} alt="random portrait" onLoad={handleImageLoaded} />
                 }
             </div>
             <div className="choicesContainer">
