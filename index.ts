@@ -38,8 +38,19 @@ interface CountryCodes {
     Continent_Code: string
 }
 function getAvailableCountryCodes() : Promise<string[]> {
+    const EASY_MODE = true;
+    let query = "";
+    if (EASY_MODE) {
+        // In easy mode, only play with countries with more than 5 million population
+        query = "select distinct country_code from Photos" +
+        " left join CountryCodes on country_code = Two_Letter_Country_Code " +
+        " left join Pop2020 on LocID = Country_Number " +
+        " where flagged != 1 and PopTotal > 5000";
+    } else {
+        query = "select distinct country_code from Photos where flagged != 1";
+    }
     return new Promise(resolve => {
-        db.all("select distinct country_code from Photos where flagged != 1", (err: string, data: {country_code: string}[]) => {
+        db.all(query, (err: string, data: {country_code: string}[]) => {
             if (!err) {
                 resolve(data.map(e => e.country_code))
             } else {
