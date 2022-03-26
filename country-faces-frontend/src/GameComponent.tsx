@@ -21,6 +21,10 @@ interface CountryCodes {
     Country_Name_Fr: string,
     Continent_Code: string
 }
+let backendHost = "http://" + window.location.host;
+if (process.env.NODE_ENV === "development") {
+    backendHost = "http://" + window.location.hostname + ":8000";
+}
 export default function GameComponent(){
     const [params, setParams] = useState({
         photo: {} as Photo & CountryCodes,
@@ -30,8 +34,9 @@ export default function GameComponent(){
     const [guess, setGuess] = useState<guessType>(-1);
     const [round, setRound] = useState(1);
     const [imageIsLoaded, setImageIsLoaded] = useState(false);
+    const [easyMode, setEasyMode] = useState(false);
     useEffect(() => {
-        fetch("http://" + window.location.hostname + ":8000/api/image")
+        fetch(backendHost + "/api/image?easyMode=" + easyMode)
         .then(res => res.json())
         .then(
             (result) => {
@@ -42,7 +47,7 @@ export default function GameComponent(){
                 console.log("fetch api error", error);
             }
         )
-    }, [round]);
+    }, [round, easyMode]);
     function handleCountrySelection(event:React.MouseEvent<HTMLButtonElement>) {
         // Only consider guess if nothing has been guessed yet
         if (guess === -1) {
@@ -51,6 +56,11 @@ export default function GameComponent(){
             // Autocontinue ?
             // setTimeout(() => continueGame(), 1000)
         }
+    }
+    function setDifficulty(event:React.ChangeEvent<HTMLInputElement>) {
+        const target = event.target as HTMLInputElement;
+        setEasyMode(target.checked);
+        continueGame();
     }
     function handleImageLoaded() {
         setImageIsLoaded(true);
@@ -72,6 +82,12 @@ export default function GameComponent(){
     }
     return (
         <div>
+            <div className="form-check">
+                <input type="checkbox" className="form-check-input" onChange={setDifficulty} name="difficultySelector"/>
+                <label className="form-check-label" htmlFor="difficultySelector">
+                    Niveau de difficulté: {easyMode ? "facile" : "normal"}
+                </label>
+            </div>
             <ScoreComponent hasUserGuessed={guess > -1} isGuessCorrect={params.countryChoices[guess] === params.photo.Country_Name_Fr} />
             <div style={{display: imageIsLoaded ? "none" : "block"}}>
                 <Spinner />

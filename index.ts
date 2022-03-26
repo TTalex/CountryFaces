@@ -7,6 +7,8 @@ import sqlite3 from 'sqlite3';
 const app = express();
 const db = new sqlite3.Database('data.db');
 
+// db.on('trace', (trace) => console.log(trace));
+
 app.use(cors());
 app.use(express.static(path.join('country-faces-frontend', 'build')));
 app.use(bodyParser.json({limit: '50mb'}));
@@ -37,10 +39,9 @@ interface CountryCodes {
     Country_Name_Fr: string,
     Continent_Code: string
 }
-function getAvailableCountryCodes() : Promise<string[]> {
-    const EASY_MODE = true;
+function getAvailableCountryCodes(easyMode:boolean) : Promise<string[]> {
     let query = "";
-    if (EASY_MODE) {
+    if (easyMode) {
         // In easy mode, only play with countries with more than 5 million population
         query = "select distinct country_code from Photos" +
         " left join CountryCodes on country_code = Two_Letter_Country_Code " +
@@ -93,8 +94,9 @@ function getRandomCountryChoices(continentCode: string, selectedCountryCode: str
         })
     });
 }
-app.get('/api/image', async (_, res) => {
-    let availableCountryCodes = await getAvailableCountryCodes();
+app.get('/api/image', async (req, res) => {
+    const {easyMode} = req.query;
+    let availableCountryCodes = await getAvailableCountryCodes(easyMode === "true");
     let randomCountryCode = getRandomElement(availableCountryCodes);
     let availableOwners = await getAvailableOwners(randomCountryCode);
     let randomOwner = getRandomElement(availableOwners);
@@ -128,6 +130,7 @@ app.delete('/api/image/:id', async (req, res) => {
     });
 });
 
-app.listen(8000, () => {
-    console.log('listening on *:8000');
+const PORT = process.env.port || 8000;
+app.listen(PORT, () => {
+    console.log('listening on *:' + PORT);
 });
